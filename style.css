@@ -60,6 +60,19 @@ body {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Space between logo and text */
+}
+
+.logo-img {
+    height: 45px; /* Adjust size as needed */
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px; /* Optional: rounds the corners */
+}
+
+.logo-text {
     background: var(--gradient-1);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
