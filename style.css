@@ -115,6 +115,7 @@ body {
 /* Hero Section */
 .hero {
     min-height: 100vh;
+    max-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -240,6 +241,8 @@ body {
 
 /* Problem & Solution Section */
 .problem-solution {
+    position: relative;
+    z-index: 10;
     padding: 100px 20px;
     background: var(--bg-light);
 }
