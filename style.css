@@ -547,87 +547,122 @@ body {
     color: var(--primary-color);
 }
 
-/* ---------------------------------------------------- */
-/* STYLES FOR IMAGE AVATARS (rounded square) */
-/* ---------------------------------------------------- */
 
+
+/* ---------------------------------------------------- */
+/* TEAM CARD & AVATAR UPDATES
+- enlarge images while keeping 1:1 ratio
+- make images fill card width
+- preserve hover effect on cards
+*/
 /* Container for the cards to lay them out side-by-side */
 .leads-container {
     display: flex;
     justify-content: center;
     gap: 30px; /* Space between the cards */
     flex-wrap: wrap;
-    max-width: 900px;
+    max-width: 1200px; /* allow wider single-row layouts */
     margin: 0 auto;
 }
 
-/* Styling for the entire white card */
+/* Styling for the entire white card (wider to fit larger avatar) */
 .lead-card {
     background-color: var(--bg-white);
-    padding: 2rem;
-    border-radius: 15px; /* Rounded corners for the card itself */
-    box-shadow: var(--shadow-md); /* Soft shadow */
-    width: 280px; /* Fixed width for consistency */
+    padding: 1.25rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow-md);
+    width: 340px;            /* increased width so image can be large */
     text-align: center;
     transition: all 0.3s ease;
-    margin-bottom: 20px; /* Add some space between rows in wrap mode */
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* ...existing code... */
+/* keep role/job-title on a single line inside team cards */
+.lead-card p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0.25rem 0 0;
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+/* ...existing code... */
+
+/* Keep and preserve hover effect */
 .lead-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-xl);
 }
 
-/* Styling for the image and its border/background (the rounded square effect) */
+/* Avatar container now fills card width but remains square (1:1) */
 .avatar-container {
-    /* Ensures the container is a square for consistent padding */
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem auto; /* Center the container and add space below */
-    padding: 5px; /* Creates space between the border and the image */
-    background-color: #e6e6fa; /* Light purple background */
-    border-radius: 20px; /* More rounded corners for the outer container */
-    border: 3px solid var(--primary-color); /* Primary color border */
-    overflow: hidden; /* Important to contain the image */
+    width: calc(100% - 2.5rem); /* full card inner width (accounts for padding) */
+    aspect-ratio: 1 / 1;        /* enforce 1:1 ratio */
+    margin: 0 0 1rem 0;
+    padding: 6px;               /* small padding to show border */
+    background-color: #e6e6fa;
+    border-radius: 12px;
+    border: 3px solid var(--primary-color);
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
-/* Styling the image itself */
+/* Image fills the square, crops by object-fit, keeps rounded corners */
 .rounded-avatar {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    border-radius: 15px; /* This creates the "rounded square" shape for the image */
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
 }
 
+/* Slight typography tweaks to match larger card */
 .lead-card h3 {
-    font-size: 1.2rem;
-    margin: 10px 0 5px 0;
+    font-size: 1.15rem;
+    margin: 10px 0 6px 0;
     color: var(--text-primary);
     font-weight: 600;
 }
 
-.lead-card p {
-    color: var(--text-secondary);
-    margin: 0;
-    font-size: 0.95em;
+/* Creative-row: keep single-line on wide screens, wrap on smaller ones */
+.creative-row {
+    max-width: 100%;
+    width: 100%;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: nowrap;               /* try single line on wide screens */
+}
+
+.creative-row .lead-card {
+    width: calc((100% - 60px) / 3);  /* 3 cards with 30px gaps when space allows */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .creative-row { flex-wrap: wrap; }
+    .creative-row .lead-card {
+        width: 320px;
+    }
+}
+
+@media (max-width: 768px) {
+    .lead-card {
+        width: 100%;
+        max-width: 520px;
+    }
+    .avatar-container {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        padding: 5px;
+    }
 }
 
 
-/* ---------------------------------------------------- */
-/* Cleaned up unused styles (since all cards use .lead-card now) */
-/* ---------------------------------------------------- */
-
-.team-grid {
-    /* This class is now obsolete and replaced by .leads-container, 
-       but kept for safety if it's used elsewhere. If only used in the team section, it can be removed entirely. */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Removed: .team-card, .team-avatar, .team-card h4, .team-role styles for unification. */
 
 
 /* Vision Section */
