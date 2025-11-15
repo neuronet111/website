@@ -119,7 +119,7 @@
         <div class="workshop-cards">
             <!-- Technical Workshop -->
             <div class="workshop-card featured">
-                <div class="workshop-badge">Technical Workshop</div>
+                <div class="workshop-badge" style="background:var(--gradient-2)">Technical Workshop</div>
                 <h3>Building Your Personalized Chatbot</h3>
                 <p class="workshop-description">Practical, no-code experience for students to build and personalize their own chatbot while learning core AI concepts.</p>
 
@@ -295,7 +295,8 @@
     </div>
 </section>
 
-    <section id="team" class="team">
+// ...existing code...
+<section id="team" class="team">
     <div class="container">
         <div class="section-header">
             <h2>Meet Our Team</h2>
@@ -310,6 +311,7 @@
                     </div>
                     <h3>Alina Khan</h3>
                     <p>Co-Founder</p>
+                    <a href="#" class="learn-more-link" data-member="alina">Learn More →</a>
                 </div>                
                 <div class="lead-card">
                     <div class="avatar-container">
@@ -317,6 +319,7 @@
                     </div>
                     <h3>Khatija Patel</h3>
                     <p>Co-Founder</p>
+                    <a href="#" class="learn-more-link" data-member="khatija">Learn More →</a>
                 </div>                
             </div>
         </div>
@@ -329,6 +332,7 @@
                     </div>
                     <h3>Ameya (JARVIS)</h3>
                     <p>Tech Workshop Lead</p>
+                    <a href="#" class="learn-more-link" data-member="ameya">Learn More →</a>
                 </div>
                 <div class="lead-card">
                     <div class="avatar-container">
@@ -336,18 +340,20 @@
                     </div>
                     <h3>Gurleenkaur Chhabda</h3>
                     <p>Psychology Workshop Lead</p>
+                    <a href="#" class="learn-more-link" data-member="gurleen">Learn More →</a>
                 </div>
             </div>
         </div>
         <div class="team-section">
             <h3 class="team-category">Creative Team</h3>
-            <div class="leads-container creative-row">                <!-- added creative-row -->
+            <div class="leads-container creative-row">
                 <div class="lead-card">
                     <div class="avatar-container">
                         <img src="Photos/ZAIN.JPG" alt="Zain Ahmad Avatar" class="rounded-avatar">
                     </div>
                     <h3>Zain Ahmad</h3>
                     <p>Social Media Manager</p>
+                    <a href="#" class="learn-more-link" data-member="zain">Learn More →</a>
                 </div>                
                 <div class="lead-card">
                     <div class="avatar-container">
@@ -355,6 +361,7 @@
                     </div>
                     <h3>Sanna</h3>
                     <p>Photographer</p>
+                    <a href="#" class="learn-more-link" data-member="sana">Learn More →</a>
                 </div>                
                 <div class="lead-card">
                     <div class="avatar-container">
@@ -362,11 +369,30 @@
                     </div>
                     <h3>Mufaiz Athar</h3>
                     <p>Video Editor</p>
+                    <a href="#" class="learn-more-link" data-member="mufaiz">Learn More →</a>
                 </div>                
             </div>
         </div>
     </div>
 </section>
+
+<!-- Team Member Modal -->
+<div id="teamModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modalMemberImage" src="" alt="Team Member">
+            </div>
+            <div class="modal-info">
+                <h2 id="modalMemberName"></h2>
+                <h4 id="modalMemberRole"></h4>
+                <div id="modalMemberBio"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <section class="vision">
         <div class="container">
