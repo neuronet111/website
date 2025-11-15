@@ -95,6 +95,87 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.querySelector('.contact-form');
     const submitButton = contactForm ? contactForm.querySelector('button[type="submit"]') : null;
 
+    // Toast notification function
+    function showToast(message, type = 'success') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        
+        const icon = type === 'success' ? '✅' : '❌';
+        const title = type === 'success' ? 'Success!' : 'Error';
+        
+        toast.innerHTML = `
+            <div class="toast-content">
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-message">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
+            </div>
+            <button class="toast-close">×</button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Show toast
+        setTimeout(() => toast.classList.add('show'), 100);
+        
+        // Close button functionality
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        });
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+        
+        // Trigger confetti for success
+        if (type === 'success') {
+            createConfetti();
+        }
+    }
+
+    // Confetti function
+    function createConfetti() {
+        const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+        const confettiCount = 50;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            
+            // Random horizontal position
+            confetti.style.left = Math.random() * 100 + '%';
+            
+            // Random color from array
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random size variation
+            const size = Math.random() * 5 + 8;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            
+            // Random animation duration and delay
+            const duration = Math.random() * 2 + 3;
+            const delay = Math.random() * 0.3;
+            confetti.style.animation = `confettiFall ${duration}s ${delay}s linear forwards`;
+            
+            // Random starting position slightly above viewport
+            confetti.style.top = '-10px';
+            
+            document.body.appendChild(confetti);
+            
+            // Remove confetti after animation completes
+            setTimeout(() => {
+                confetti.remove();
+            }, (duration + delay) * 1000);
+        }
+    }
+
     if (contactForm && submitButton) {
         contactForm.addEventListener('submit', function(event) {
             event.preventDefault();
@@ -105,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const templateParams = {
                 from_name: contactForm.querySelector('input[name="name"]').value,
-                reply_to: contactForm.querySelector('input[name="reply_to"]').value, // Changed from from_email
-                institution: contactForm.querySelector('input[name="institution"]').value, // Added institution field
+                reply_to: contactForm.querySelector('input[name="reply_to"]').value,
+                institution: contactForm.querySelector('input[name="institution"]').value,
                 subject: contactForm.querySelector('input[name="subject"]').value,
                 message: contactForm.querySelector('textarea[name="message"]').value,
             };
@@ -114,11 +195,12 @@ document.addEventListener('DOMContentLoaded', function() {
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
                 .then(function(response) {
                     console.log('SUCCESS!', response.status, response.text);
-                    alert('Message sent successfully! We will get back to you soon.');
+                    showToast('Message sent successfully! We will get back to you soon.', 'success');
+                    createConfetti(); // Make sure this is called
                     contactForm.reset();
                 }, function(error) {
                     console.error('FAILED...', error);
-                    alert('Failed to send message. Please try again or contact us directly via email.');
+                    showToast('Failed to send message. Please try again or contact us directly via email.', 'error');
                 })
                 .finally(function() {
                     submitButton.textContent = originalButtonText;

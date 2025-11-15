@@ -1170,7 +1170,108 @@ body {
     opacity: 0.8;
 }
 
-/* Responsive Design */
+/* Toast Notification Styles */
+.toast-notification {
+    position: fixed;
+    top: 100px;
+    right: -400px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 10000;
+    min-width: 300px;
+    max-width: 400px;
+    color: white;
+    transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast-notification.show {
+    right: 30px;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toast-icon {
+    font-size: 2rem;
+    animation: bounceIn 0.6s ease;
+}
+
+.toast-message h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.toast-message p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.toast-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.toast-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Confetti Styles */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 2px;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
 @media (max-width: 1024px) {
     .creative-row { flex-wrap: wrap; }
     .creative-row .lead-card {
@@ -1229,11 +1330,19 @@ body {
         width: 100%;
         padding: 5px;
     }
-}
-
-@media (min-width: 1024px) {
-    .hero-visual {
-        display: flex;
-        flex-direction: column;
+    
+    .toast-notification {
+        right: -350px;
+        min-width: 280px;
+        max-width: calc(100% - 40px);
+    }
+    
+    .toast-notification.show {
+        right: 20px;
+    }
+    
+    .confetti {
+        width: 8px;
+        height: 8px;
     }
 }
