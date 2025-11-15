@@ -105,7 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const templateParams = {
                 from_name: contactForm.querySelector('input[name="name"]').value,
-                from_email: contactForm.querySelector('input[name="email"]').value,
+                reply_to: contactForm.querySelector('input[name="reply_to"]').value, // Changed from from_email
+                institution: contactForm.querySelector('input[name="institution"]').value, // Added institution field
                 subject: contactForm.querySelector('input[name="subject"]').value,
                 message: contactForm.querySelector('textarea[name="message"]').value,
             };
