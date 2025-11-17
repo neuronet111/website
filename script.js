@@ -194,19 +194,47 @@ document.addEventListener('DOMContentLoaded', function() {
             submitButton.textContent = 'Sending...';
             submitButton.disabled = true;
 
+            // Get form values with detailed logging
+            const nameInput = contactForm.querySelector('input[name="name"]');
+            const emailInput = contactForm.querySelector('input[name="reply_to"]');
+            const institutionInput = contactForm.querySelector('input[name="institution"]');
+            const subjectInput = contactForm.querySelector('input[name="subject"]');
+            const messageInput = contactForm.querySelector('textarea[name="message"]');
+
+            console.log('Form inputs found:', {
+                nameInput: nameInput,
+                emailInput: emailInput,
+                institutionInput: institutionInput
+            });
+
+            const name = nameInput ? nameInput.value.trim() : '';
+            const email = emailInput ? emailInput.value.trim() : '';
+            const institution = institutionInput ? institutionInput.value.trim() : '';
+            const subject = subjectInput ? subjectInput.value.trim() : '';
+            const message = messageInput ? messageInput.value.trim() : '';
+
+            console.log('Form values extracted:', {
+                name: name,
+                email: email,
+                institution: institution,
+                subject: subject,
+                message: message
+            });
+
             const templateParams = {
-                from_name: contactForm.querySelector('input[name="name"]').value,
-                reply_to: contactForm.querySelector('input[name="reply_to"]').value,
-                institution: contactForm.querySelector('input[name="institution"]').value,
-                subject: contactForm.querySelector('input[name="subject"]').value,
-                message: contactForm.querySelector('textarea[name="message"]').value,
+                from_name: name,
+                from_email: email,
+                institution: institution,
+                subject: subject,
+                message: message
             };
+
+            console.log('Template params being sent:', templateParams);
 
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
                 .then(function(response) {
                     console.log('SUCCESS!', response.status, response.text);
                     showToast('Message sent successfully! We will get back to you soon.', 'success');
-                    createConfetti(); // Make sure this is called
                     contactForm.reset();
                 }, function(error) {
                     console.error('FAILED...', error);
