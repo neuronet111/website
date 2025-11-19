@@ -279,6 +279,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- Accordion Functionality ---
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const accordionItem = this.parentElement;
+            const container = accordionItem.closest('.accordion-container');
+            const isPricing = container && container.classList.contains('pricing');
+            const isActive = accordionItem.classList.contains('active');
+
+            if (isPricing) {
+                // Pricing accordion: allow multiple items open
+                accordionItem.classList.toggle('active');
+            } else {
+                // Default behavior: single open within the same container
+                if (container) {
+                    container.querySelectorAll('.accordion-item').forEach(item => {
+                        if (item !== accordionItem) item.classList.remove('active');
+                    });
+                }
+                accordionItem.classList.toggle('active');
+            }
+        });
+    });
+
     // --- Team Member Modal Functionality ---
     const modal = document.getElementById('teamModal');
     const modalClose = document.querySelector('.modal-close');
@@ -439,6 +464,137 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.style.display === 'block') {
             modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // --- Integration Topic Modal Functionality ---
+    const integrationModal = document.getElementById('integrationModal');
+    const integrationClose = document.querySelector('.integration-close');
+    const learnMoreBtns = document.querySelectorAll('.learn-more-btn');
+
+    // Integration topics data
+    const integrationData = {
+        emotions: {
+            title: "How AI Detects Emotions",
+            content: `
+                <p>How AI reads emotions in brief:</p>
+                <ul>
+                    <li>Faces: micro‑expressions, gaze and muscle movement</li>
+                    <li>Voice: tone, pitch and pace reveal arousal or stress</li>
+                    <li>Text: sentiment and intent via language patterns</li>
+                    <li>Limits: context, culture and authenticity are hard; privacy risks</li>
+                </ul>
+                <p><strong>Workshop:</strong> Try quick demos, then discuss where machines misread you.</p>
+            `
+        },
+        empathy: {
+            title: "AI vs Human Empathy",
+            content: `
+                <p>AI can simulate care, not feel it.</p>
+                <ul>
+                    <li>AI does: recognize patterns, offer 24/7 prompts, track mood</li>
+                    <li>AI can’t: feel, hold deep context, replace trusted relationships</li>
+                </ul>
+                <p><strong>Workshop:</strong> Map when a bot helps vs when a human matters.</p>
+            `
+        },
+        attention: {
+            title: "How Algorithms Influence Attention",
+            content: `
+                <p>Platforms compete for your attention.</p>
+                <ul>
+                    <li>Levers: variable rewards, social proof, infinite scroll, personalization</li>
+                    <li>Effects: shorter focus, sleep disruption, mood swings</li>
+                    <li>Regain control: set timers, batch notifications, intentional breaks</li>
+                </ul>
+                <p><strong>Workshop:</strong> Audit your feed and redesign it for focus.</p>
+            `
+        },
+        dopamine: {
+            title: "Digital Dependency & Dopamine",
+            content: `
+                <ul>
+                    <li>Loop: cue → check → reward → repeat</li>
+                    <li>Signs: compulsive checking, anxiety without phone, late‑night scrolling</li>
+                    <li>Break it: remove cues, delay checks, add healthy rewards</li>
+                </ul>
+                <p><strong>Workshop:</strong> Build a 7‑day dopamine reset plan.</p>
+            `
+        },
+        strain: {
+            title: "Early Signs of Psychological Strain",
+            content: `
+                <ul>
+                    <li>Stressors: comparison, cyberbullying, overload, blurred identity</li>
+                    <li>Early signs: irritability, withdrawal, poor sleep, foggy focus</li>
+                    <li>Do: talk to someone, lighten inputs, small routines, seek help early</li>
+                </ul>
+                <p><strong>Workshop:</strong> Spot‑the‑signs exercises and peer‑support scripts.</p>
+            `
+        },
+        wellness: {
+            title: "AI as a Mental Wellness Assistant",
+            content: `
+                <ul>
+                    <li>AI strengths: on‑demand prompts, tracking, structured tools</li>
+                    <li>Limits: no real empathy, misses nuance, not for crises</li>
+                    <li>Use well: journaling, CBT micro‑tasks, breathing & sleep routines</li>
+                </ul>
+                <p><strong>Workshop:</strong> Choose safe tools and a “when to escalate” checklist.</p>
+            `
+        },
+        awareness: {
+            title: "Building Awareness Around Daily Digital Usage",
+            content: `
+                <ul>
+                    <li>Track: screen time, triggers, energy</li>
+                    <li>Understand: when/why you reach for it</li>
+                    <li>Boundaries: device‑free zones, morning/evening rules, notification audit</li>
+                    <li>Alternatives: movement, people, creativity, mindfulness</li>
+                </ul>
+                <p><strong>Practice:</strong> Digital sunset, mindful morning, weekly mini‑detox.</p>
+            `
+        }
+    };
+
+    // Open integration modal when Learn More is clicked
+    learnMoreBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const topicId = this.getAttribute('data-integration');
+            const topic = integrationData[topicId];
+            
+            if (topic) {
+                document.getElementById('modalIntegrationTitle').textContent = topic.title;
+                document.getElementById('modalIntegrationContent').innerHTML = topic.content;
+                
+                integrationModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    // Close integration modal when X is clicked
+    if (integrationClose) {
+        integrationClose.addEventListener('click', function() {
+            integrationModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+    }
+
+    // Close integration modal when clicking outside
+    window.addEventListener('click', function(e) {
+        if (e.target === integrationModal) {
+            integrationModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Close integration modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && integrationModal.style.display === 'block') {
+            integrationModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
     });
