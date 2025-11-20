@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alina: {
             name: "Alina Khan",
             role: "Co-Founder",
-            image: "Photos/ALINA.jpeg",
+            image: "Photos/ALINA.webp",
             bio: `
                 <p>Alina Khan is a visionary entrepreneur and co-founder of Neuro.net, dedicated to bridging the gap between artificial intelligence and human psychology.</p>
                 <p>With a passion for mental health and technology, she believes in empowering young minds to navigate the digital age with resilience and awareness.</p>
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         khatija: {
             name: "Khatija Patel",
             role: "Co-Founder",
-            image: "Photos/KHATIJA.jpeg",
+            image: "Photos/KHATIJA.webp",
             bio: `
                 <p>Khatija Patel is a passionate advocate for digital literacy and co-founder of Neuro.net, committed to making AI education accessible and meaningful for students.</p>
                 <p>Her expertise lies in creating engaging educational content that demystifies complex technological concepts while addressing mental wellness.</p>
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ameya: {
             name: "Ameya (JARVIS)",
             role: "Tech Workshop Lead",
-            image: "Photos/AMEYA.JPG",
+            image: "Photos/AMEYA.webp",
             bio: `
                 <p>Known as JARVIS, Ameya brings technical expertise and a passion for AI education to Neuro.net's technical workshops.</p>
                 <p>He specializes in making complex AI concepts accessible through hands-on, practical learning experiences that inspire curiosity and creativity.</p>
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gurleen: {
             name: "Gurleenkaur Chhabda",
             role: "Psychology Workshop Lead",
-            image: "Photos/GURLEEN.jpeg",
+            image: "Photos/GURLEEN.webp",
             bio: `
                 <p>Gurleenkaur Chhabda leads the psychological wellness component of Neuro.net's workshops, bringing deep understanding of emotional intelligence and mental health.</p>
                 <p>She specializes in psychoanalytic approaches and helps students develop self-awareness and emotional resilience in the digital age.</p>
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
         zain: {
             name: "Zain Ahmad",
             role: "Social Media Manager",
-            image: "Photos/ZAIN.JPG",
+            image: "Photos/ZAIN.webp",
             bio: `
                 <p>Zain Ahmad manages Neuro.net's digital presence and community engagement, ensuring our message reaches and resonates with students, educators, and institutions.</p>
                 <p>His creative approach to social media storytelling helps amplify the impact of our mission and workshops.</p>
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sana: {
             name: "Sanna",
             role: "Photographer",
-            image: "Photos/SANA.jpeg",
+            image: "Photos/SANA.webp",
             bio: `
                 <p>Sanna captures the essence of Neuro.net's workshops and events through powerful visual storytelling.</p>
                 <p>Her photography brings to life the transformative moments of learning, discovery, and emotional growth that students experience in our programs.</p>
