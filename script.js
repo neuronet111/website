@@ -8,50 +8,423 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize EmailJS
     emailjs.init(EMAILJS_USER_ID);
 
-    // Mobile menu toggle - UPDATED
-    const mobileToggle = document.querySelector('.mobile-menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
-    if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', function (e) {
-            e.stopPropagation();
-            navLinks.classList.toggle('active');
-
-            // Animate hamburger to X
-            const spans = mobileToggle.querySelectorAll('span');
-            if (navLinks.classList.contains('active')) {
-                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-                spans[1].style.opacity = '0';
-                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-            } else {
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
+    // Animated Neural Network Background - Optimized
+    function initNeuralNetwork() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'neural-network';
+        document.body.prepend(canvas);
+        
+        const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+        let particles = [];
+        let animationId;
+        let mouse = { x: null, y: null, radius: 120 };
+        let lastMouseUpdate = 0;
+        const mouseUpdateThrottle = 50; // ms
+        
+        // Only render visible viewport area
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resizeCanvas();
+                initParticles();
+            }, 250);
+        });
+        
+        // Track mouse position with throttling
+        window.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMouseUpdate > mouseUpdateThrottle) {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                lastMouseUpdate = now;
             }
         });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!navLinks.contains(e.target) && !mobileToggle.contains(e.target)) {
-                navLinks.classList.remove('active');
-                const spans = mobileToggle.querySelectorAll('span');
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
-            }
+        
+        // Reset mouse position when cursor leaves window
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
         });
+        
+        // Particle class
+        class Particle {
+            constructor() {
+                this.baseX = Math.random() * canvas.width;
+                this.baseY = Math.random() * canvas.height;
+                this.x = this.baseX;
+                this.y = this.baseY;
+                this.targetX = this.baseX;
+                this.targetY = this.baseY;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.radius = Math.random() * 2.5 + 2;
+                this.opacity = Math.random() * 0.3 + 0.5;
+                this.baseOpacity = this.opacity;
+                this.targetOpacity = this.baseOpacity;
+                this.mouseConnectionOpacity = 0;
+                this.targetMouseConnectionOpacity = 0;
+            }
+            
+            update() {
+                // Random movement
+                this.baseX += this.vx;
+                this.baseY += this.vy;
+                
+                // Wrap around edges
+                if (this.baseX < 0) this.baseX = canvas.width;
+                if (this.baseX > canvas.width) this.baseX = 0;
+                if (this.baseY < 0) this.baseY = canvas.height;
+                if (this.baseY > canvas.height) this.baseY = 0;
+                
+                // Mouse interaction - smooth with interpolation
+                if (mouse.x != null && mouse.y != null) {
+                    const dx = mouse.x - this.baseX;
+                    const dy = mouse.y - this.baseY;
+                    const distanceSq = dx * dx + dy * dy;
+                    const radiusSq = mouse.radius * mouse.radius;
+                    
+                    if (distanceSq < radiusSq) {
+                        const distance = Math.sqrt(distanceSq);
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        const angle = Math.atan2(dy, dx);
+                        
+                        const attractionX = Math.cos(angle) * force * 6;
+                        const attractionY = Math.sin(angle) * force * 6;
+                        
+                        this.targetX = this.baseX + attractionX;
+                        this.targetY = this.baseY + attractionY;
+                        this.targetOpacity = Math.min(this.baseOpacity + force * 0.4, 0.9);
+                    } else {
+                        this.targetX = this.baseX;
+                        this.targetY = this.baseY;
+                        this.targetOpacity = this.baseOpacity;
+                    }
+                } else {
+                    this.targetX = this.baseX;
+                    this.targetY = this.baseY;
+                    this.targetOpacity = this.baseOpacity;
+                }
+                
+                // Calculate target mouse connection opacity
+                if (mouse.x != null && mouse.y != null) {
+                    const dx = mouse.x - this.baseX;
+                    const dy = mouse.y - this.baseY;
+                    const distanceSq = dx * dx + dy * dy;
+                    const radiusSq = mouse.radius * mouse.radius;
+                    
+                    if (distanceSq < radiusSq) {
+                        const distance = Math.sqrt(distanceSq);
+                        this.targetMouseConnectionOpacity = (1 - distance / mouse.radius) * 0.6;
+                    } else {
+                        this.targetMouseConnectionOpacity = 0;
+                    }
+                } else {
+                    this.targetMouseConnectionOpacity = 0;
+                }
+                
+                // Smooth interpolation (lerp) for position and opacity
+                const smoothness = 0.15;
+                this.x += (this.targetX - this.x) * smoothness;
+                this.y += (this.targetY - this.y) * smoothness;
+                this.opacity += (this.targetOpacity - this.opacity) * smoothness;
+                this.mouseConnectionOpacity += (this.targetMouseConnectionOpacity - this.mouseConnectionOpacity) * smoothness;
+            }
+            
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Initialize particles - reduced count
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 20000), 60);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        initParticles();
+        
+        // Draw connections - optimized
+        function drawConnections() {
+            const maxDistance = 120;
+            const maxDistanceSq = maxDistance * maxDistance;
+            
+            // Only check connections for particles in viewport
+            for (let i = 0; i < particles.length; i++) {
+                let connectionsDrawn = 0;
+                const maxConnections = 3; // Limit connections per particle
+                
+                for (let j = i + 1; j < particles.length && connectionsDrawn < maxConnections; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distanceSq = dx * dx + dy * dy;
+                    
+                    if (distanceSq < maxDistanceSq) {
+                        const distance = Math.sqrt(distanceSq);
+                        const opacity = (1 - distance / maxDistance) * 0.5;
+                        ctx.strokeStyle = `rgba(100, 200, 255, ${opacity})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        connectionsDrawn++;
+                    }
+                }
+                
+                // Mouse connections - smooth with interpolated opacity
+                if (mouse.x != null && mouse.y != null && particles[i].mouseConnectionOpacity > 0.01) {
+                    ctx.strokeStyle = `rgba(100, 200, 255, ${particles[i].mouseConnectionOpacity})`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // Simplified mouse effect
+        function drawMouseEffect() {
+            if (mouse.x != null && mouse.y != null) {
+                const gradient = ctx.createRadialGradient(
+                    mouse.x, mouse.y, 0,
+                    mouse.x, mouse.y, 25
+                );
+                gradient.addColorStop(0, 'rgba(100, 200, 255, 0.15)');
+                gradient.addColorStop(1, 'rgba(100, 200, 255, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(mouse.x, mouse.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Animation loop with FPS limiting
+        let lastFrameTime = 0;
+        const targetFPS = 30;
+        const frameInterval = 1000 / targetFPS;
+        
+        // Interactive click ripple effect
+        let ripples = [];
+        
+        class RippleParticle {
+            constructor(x, y, angle, boost = false) {
+                this.x = x;
+                this.y = y;
+                this.startX = x;
+                this.startY = y;
+                this.angle = angle;
+                this.speed = (Math.random() * 3 + 2) * (boost ? 1.4 : 1);
+                this.radius = (Math.random() * 4 + 3) * (boost ? 1.5 : 1); // larger base radius
+                this.life = 1;
+                this.decay = (Math.random() * 0.012 + 0.008) * (boost ? 0.7 : 1); // slower decay when boosted
+                const hue = Math.random() * 40 + 200; // cooler cyan/blue palette
+                const sat = boost ? 95 : 85;
+                const light = boost ? 72 : 65;
+                this.color = `hsl(${hue}, ${sat}%, ${light}%)`;
+            }
+            
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.life -= this.decay;
+                this.speed *= 0.98;
+            }
+            
+            draw() {
+                if (this.life <= 0) return;
+                
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, this.radius
+                );
+                gradient.addColorStop(0, this.color.replace(')', `, ${this.life})`).replace('hsl', 'hsla'));
+                gradient.addColorStop(1, this.color.replace(')', ', 0)').replace('hsl', 'hsla'));
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * this.life, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw connection to origin
+                const distFromOrigin = Math.sqrt((this.x - this.startX) ** 2 + (this.y - this.startY) ** 2);
+                if (distFromOrigin < 150) {
+                    const lineOpacity = (1 - distFromOrigin / 150) * this.life * 0.3;
+                    ctx.strokeStyle = this.color.replace(')', `, ${lineOpacity})`).replace('hsl', 'hsla');
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(this.startX, this.startY);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // Unified ripple trigger for desktop (click) and touch
+        let lastRippleTime = 0;
+        function spawnRipple(clientX, clientY, boost = false) {
+            const now = performance.now();
+            if (now - lastRippleTime < 140) return; // throttle spam
+            lastRippleTime = now;
+            const rect = canvas.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            const particleCount = boost ? 60 : 40; // more particles when boosted (e.g. long press)
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (Math.PI * 2 * i) / particleCount;
+                ripples.push(new RippleParticle(x, y, angle, boost));
+            }
+        }
 
-        // Close menu when clicking a link
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function () {
-                navLinks.classList.remove('active');
-                const spans = mobileToggle.querySelectorAll('span');
-                spans[0].style.transform = 'none';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = 'none';
+        canvas.addEventListener('click', (e) => spawnRipple(e.clientX, e.clientY));
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0) spawnRipple(e.clientX, e.clientY, true); // stronger ripple on press
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            const t = e.changedTouches[0];
+            spawnRipple(t.clientX, t.clientY, e.touches.length > 1); // multi-touch => boost
+        }, { passive: true });
+        
+        // Main animation loop with ripples integrated
+        function animate(currentTime) {
+            const deltaTime = currentTime - lastFrameTime;
+            
+            if (deltaTime >= frameInterval) {
+                lastFrameTime = currentTime - (deltaTime % frameInterval);
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                drawMouseEffect();
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                drawConnections();
+                
+                // Update and draw ripples
+                ripples = ripples.filter(ripple => {
+                    ripple.update();
+                    ripple.draw();
+                    return ripple.life > 0;
+                });
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        animate(0);
+    }
+    
+    initNeuralNetwork();
+
+    // iOS-style pill highlight for navigation
+    function initNavPillHighlight() {
+        const navLinks = document.querySelector('.nav-links');
+        if (!navLinks || navLinks.classList.contains('active')) return;
+
+        // Create pill highlight element
+        const pill = document.createElement('div');
+        pill.className = 'nav-pill-highlight';
+        navLinks.appendChild(pill);
+
+        const links = navLinks.querySelectorAll('a');
+        if (links.length === 0) return;
+
+        // Set initial active link (home)
+        const activeLink = links[0];
+        activeLink.classList.add('active');
+
+        // Function to move pill to target link
+        function movePill(link) {
+            const linkRect = link.getBoundingClientRect();
+            const navRect = navLinks.getBoundingClientRect();
+            
+            const left = linkRect.left - navRect.left;
+            const width = linkRect.width;
+            const height = linkRect.height;
+
+            pill.style.left = left + 'px';
+            pill.style.width = width + 'px';
+            pill.style.height = height + 'px';
+        }
+
+        // Initialize pill position
+        movePill(activeLink);
+
+        // Add click handlers to all nav links
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Remove active class from all links
+                links.forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Move pill to clicked link
+                movePill(this);
             });
         });
+
+        // Update pill position on window resize
+        window.addEventListener('resize', () => {
+            const currentActive = navLinks.querySelector('a.active');
+            if (currentActive) {
+                movePill(currentActive);
+            }
+        });
+
+        // Update active state based on scroll position
+        function updateActiveOnScroll() {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollY = window.pageYOffset;
+
+            // If at the very top, activate home
+            if (scrollY < 100) {
+                links.forEach(l => l.classList.remove('active'));
+                links[0].classList.add('active');
+                movePill(links[0]);
+                return;
+            }
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+
+                if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                    links.forEach(l => {
+                        l.classList.remove('active');
+                        if (l.getAttribute('href') === `#${sectionId}`) {
+                            l.classList.add('active');
+                            movePill(l);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Add scroll listener for active state
+        window.addEventListener('scroll', updateActiveOnScroll);
     }
+
+    // Initialize pill highlight after a short delay to ensure layout is ready
+    setTimeout(initNavPillHighlight, 100);
 
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -77,8 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Navbar scroll effect
-    let lastScroll = 0;
+    // Navbar scroll effect (minimal - just shadow changes)
     const navbar = document.querySelector('.navbar');
 
     window.addEventListener('scroll', () => {
@@ -86,19 +458,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (currentScroll <= 0) {
             navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
-            return;
-        }
-
-        if (currentScroll > lastScroll && currentScroll > 100) {
-            // Scrolling down
-            navbar.style.transform = 'translateX(-50%) translateY(-100%)';
         } else {
-            // Scrolling up
-            navbar.style.transform = 'translateX(-50%) translateY(0)';
             navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.2)';
         }
-
-        lastScroll = currentScroll;
     });
 
     // --- EmailJS Form Submission Logic ---
@@ -650,4 +1012,139 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.style.overflow = 'auto';
         }
     });
+
+    // Video Autoplay on Visibility
+    const workVideo = document.querySelector('.work-video');
+    if (workVideo) {
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Video is visible, play it
+                    workVideo.play().catch(err => {
+                        console.log('Autoplay prevented:', err);
+                    });
+                } else {
+                    // Video is not visible, pause it
+                    workVideo.pause();
+                }
+            });
+        }, {
+            threshold: 0.5 // Play when 50% of video is visible
+        });
+
+        videoObserver.observe(workVideo);
+    }
+
+    // Gallery Carousel - Overlapping Center Stack (manual)
+    const carouselTrack = document.querySelector('.carousel-track');
+    if (carouselTrack) {
+        const prevBtn = document.querySelector('.carousel-btn.prev');
+        const nextBtn = document.querySelector('.carousel-btn.next');
+
+        // Remove old clones
+        carouselTrack.querySelectorAll('.carousel-slide.clone').forEach(c => c.remove());
+        const originals = Array.from(carouselTrack.querySelectorAll('.carousel-slide'));
+        const originalLength = originals.length;
+
+        // Create clones for infinite feel (strip videos)
+        originals.forEach(slide => {
+            const after = slide.cloneNode(true); after.classList.add('clone'); const va = after.querySelector('video'); if (va) va.remove(); carouselTrack.appendChild(after);
+            const before = slide.cloneNode(true); before.classList.add('clone'); const vb = before.querySelector('video'); if (vb) vb.remove(); carouselTrack.insertBefore(before, carouselTrack.firstChild);
+        });
+
+        const allSlides = Array.from(carouselTrack.querySelectorAll('.carousel-slide'));
+        const startIndex = originalLength; // index of first original (center start)
+        let currentIndex = startIndex;
+
+        function applyPositions() {
+            const slideW = allSlides[0] ? allSlides[0].offsetWidth : 408;
+            const isMobile = window.innerWidth < 640;
+            const nearOffset = isMobile ? slideW * 0.45 : slideW * 0.55; // first ring spacing
+            const farOffset = isMobile ? slideW * 0.75 : slideW * 0.9;   // second ring spacing
+            allSlides.forEach(slide => {
+                slide.classList.remove('center');
+                slide.style.visibility = 'hidden';
+                slide.style.pointerEvents = 'none';
+            });
+            for (let i = 0; i < allSlides.length; i++) {
+                const dist = i - currentIndex;
+                const s = allSlides[i];
+                if (dist === 0) {
+                    s.classList.add('center');
+                    s.style.transform = 'translate(-50%, -50%) scale(1)';
+                    s.style.opacity = '1';
+                    s.style.filter = 'brightness(1)';
+                    s.style.zIndex = '50';
+                    s.style.visibility = 'visible';
+                    s.style.pointerEvents = 'auto';
+                    continue;
+                }
+                if (Math.abs(dist) === 1) {
+                    const x = dist * nearOffset;
+                    s.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(0.78)`;
+                    s.style.opacity = '0.9';
+                    s.style.filter = 'brightness(0.75)';
+                    s.style.zIndex = (40 - Math.abs(dist)).toString();
+                    s.style.visibility = 'visible';
+                    continue;
+                }
+                if (Math.abs(dist) === 2) {
+                    const x = dist * farOffset;
+                    s.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(0.6)`;
+                    s.style.opacity = '0.5';
+                    s.style.filter = 'brightness(0.55)';
+                    s.style.zIndex = (30 - Math.abs(dist)).toString();
+                    s.style.visibility = 'visible';
+                    continue;
+                }
+                // deeper slides stay hidden
+            }
+            updateVideoPlayback();
+        }
+
+        function updateVideoPlayback() {
+            const center = carouselTrack.querySelector('.carousel-slide.center');
+            allSlides.forEach(slide => {
+                const video = slide.querySelector('.carousel-video');
+                if (!video) return;
+                if (slide === center) {
+                    video.muted = false; const p = video.play(); if (p) p.catch(()=> setTimeout(()=> video.play().catch(()=>{}), 200));
+                } else { video.pause(); }
+            });
+        }
+
+        function nextSlide() {
+            currentIndex++;
+            if (currentIndex >= startIndex + originalLength) currentIndex -= originalLength; // wrap
+            applyPositions();
+        }
+        function prevSlide() {
+            currentIndex--;
+            if (currentIndex < startIndex) currentIndex += originalLength;
+            applyPositions();
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        let touchStartX = 0;
+        carouselTrack.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        carouselTrack.addEventListener('touchend', e => {
+            const endX = e.changedTouches[0].screenX;
+            if (endX < touchStartX - 50) nextSlide();
+            if (endX > touchStartX + 50) prevSlide();
+        });
+
+        window.addEventListener('resize', applyPositions);
+        applyPositions();
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    allSlides.forEach(slide => { const v = slide.querySelector('.carousel-video'); if (v) v.pause(); });
+                } else { updateVideoPlayback(); }
+            });
+        }, { threshold: 0.3 });
+        observer.observe(carouselTrack);
+    }
 });
