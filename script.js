@@ -479,10 +479,10 @@ document.addEventListener('DOMContentLoaded', function () {
             title: "Understand Your Feelings",
             content: `
                 <h4>What You'll Do</h4>
-                <p>Learn to name your feelings (happy, sad, angry, confused) and understand why you feel them.</p>
+                <p>Learn to recognize and label your complex feelings (disgust, vigilance, anticipation) and understand it's roots and how to cope with them in healthy way.</p>
                 
                 <h4>The Fun Part</h4>
-                <p>Build your own chatbot that can guess emotions from text! Just copy-paste some code, type in messages, and watch the AI figure out if you're happy or upset.</p>
+                <p>Build your own chatbot that can guess emotions from text! Just copy-paste some code, type in messages, and watch AI breakdown your complex emotions for you.</p>
                 
                 <h4>What You'll Learn</h4>
                 <ul>
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <li>Design counter-strategies: timers, intentional feed curation, bias awareness</li>
                 </ul>
                 <p><strong>Outcome:</strong> Recognize the double impact of internal biases + external algorithmic manipulation on attention.</p>
-            `
+            ` 
         },
         dopamine: {
             title: "Break Phone Addiction",
