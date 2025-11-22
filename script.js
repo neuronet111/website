@@ -1,22 +1,22 @@
 // script.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // --- Configuration ---
     const EMAILJS_SERVICE_ID = "service_kir0ule";
     const EMAILJS_TEMPLATE_ID = "template_t3o2or4";
     const EMAILJS_USER_ID = "2w3atmy2XtphlHOCs";
-    
+
     // Initialize EmailJS
-    emailjs.init(EMAILJS_USER_ID); 
+    emailjs.init(EMAILJS_USER_ID);
 
     // Mobile menu toggle - UPDATED
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
+
     if (mobileToggle && navLinks) {
-        mobileToggle.addEventListener('click', function(e) {
+        mobileToggle.addEventListener('click', function (e) {
             e.stopPropagation();
             navLinks.classList.toggle('active');
-            
+
             // Animate hamburger to X
             const spans = mobileToggle.querySelectorAll('span');
             if (navLinks.classList.contains('active')) {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!navLinks.contains(e.target) && !mobileToggle.contains(e.target)) {
                 navLinks.classList.remove('active');
                 const spans = mobileToggle.querySelectorAll('span');
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Close menu when clicking a link
         navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
                 navLinks.classList.remove('active');
                 const spans = mobileToggle.querySelectorAll('span');
                 spans[0].style.transform = 'none';
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
-            
+
             // Special handling for home section - scroll to top
             if (targetId === '#home') {
                 window.scrollTo({
@@ -80,15 +80,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Navbar scroll effect
     let lastScroll = 0;
     const navbar = document.querySelector('.navbar');
-    
+
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-        
+
         if (currentScroll <= 0) {
             navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
             return;
         }
-        
+
         if (currentScroll > lastScroll && currentScroll > 100) {
             // Scrolling down
             navbar.style.transform = 'translateX(-50%) translateY(-100%)';
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navbar.style.transform = 'translateX(-50%) translateY(0)';
             navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.2)';
         }
-        
+
         lastScroll = currentScroll;
     });
 
@@ -110,10 +110,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create toast element
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
-        
+
         const icon = type === 'success' ? '✅' : '❌';
         const title = type === 'success' ? 'Success!' : 'Error';
-        
+
         toast.innerHTML = `
             <div class="toast-content">
                 <div class="toast-icon">${icon}</div>
@@ -124,25 +124,25 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <button class="toast-close">×</button>
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         // Show toast
         setTimeout(() => toast.classList.add('show'), 100);
-        
+
         // Close button functionality
         const closeBtn = toast.querySelector('.toast-close');
         closeBtn.addEventListener('click', () => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 500);
         });
-        
+
         // Auto remove after 5 seconds
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 500);
         }, 5000);
-        
+
         // Trigger confetti for success
         if (type === 'success') {
             createConfetti();
@@ -153,32 +153,32 @@ document.addEventListener('DOMContentLoaded', function() {
     function createConfetti() {
         const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
         const confettiCount = 50;
-        
+
         for (let i = 0; i < confettiCount; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
-            
+
             // Random horizontal position
             confetti.style.left = Math.random() * 100 + '%';
-            
+
             // Random color from array
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            
+
             // Random size variation
             const size = Math.random() * 5 + 8;
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
-            
+
             // Random animation duration and delay
             const duration = Math.random() * 2 + 3;
             const delay = Math.random() * 0.3;
             confetti.style.animation = `confettiFall ${duration}s ${delay}s linear forwards`;
-            
+
             // Random starting position slightly above viewport
             confetti.style.top = '-10px';
-            
+
             document.body.appendChild(confetti);
-            
+
             // Remove confetti after animation completes
             setTimeout(() => {
                 confetti.remove();
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (contactForm && submitButton) {
-        contactForm.addEventListener('submit', function(event) {
+        contactForm.addEventListener('submit', function (event) {
             event.preventDefault();
 
             const originalButtonText = submitButton.textContent;
@@ -232,15 +232,15 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Template params being sent:', templateParams);
 
             emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-                .then(function(response) {
+                .then(function (response) {
                     console.log('SUCCESS!', response.status, response.text);
                     showToast('Message sent successfully! We will get back to you soon.', 'success');
                     contactForm.reset();
-                }, function(error) {
+                }, function (error) {
                     console.error('FAILED...', error);
                     showToast('Failed to send message. Please try again or contact us directly via email.', 'error');
                 })
-                .finally(function() {
+                .finally(function () {
                     submitButton.textContent = originalButtonText;
                     submitButton.disabled = false;
                 });
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const accordionHeaders = document.querySelectorAll('.accordion-header');
 
     accordionHeaders.forEach(header => {
-        header.addEventListener('click', function() {
+        header.addEventListener('click', function () {
             const accordionItem = this.parentElement;
             const container = accordionItem.closest('.accordion-container');
             const isPricing = container && container.classList.contains('pricing');
@@ -427,17 +427,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open modal when Learn More is clicked
     learnMoreLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const memberId = this.getAttribute('data-member');
             const member = teamData[memberId];
-            
+
             if (member) {
                 document.getElementById('modalMemberImage').src = member.image;
                 document.getElementById('modalMemberName').textContent = member.name;
                 document.getElementById('modalMemberRole').textContent = member.role;
                 document.getElementById('modalMemberBio').innerHTML = member.bio;
-                
+
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -446,14 +446,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close modal when X is clicked
     if (modalClose) {
-        modalClose.addEventListener('click', function() {
+        modalClose.addEventListener('click', function () {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
         });
     }
 
     // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         if (e.target === modal) {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && modal.style.display === 'block') {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -476,99 +476,151 @@ document.addEventListener('DOMContentLoaded', function() {
     // Integration topics data
     const integrationData = {
         emotions: {
-            title: "How AI Detects Emotions",
+            title: "Understand Your Feelings",
             content: `
-                <p>How AI reads emotions in brief:</p>
+                <h4>What You'll Do</h4>
+                <p>Learn to name your feelings (happy, sad, angry, confused) and understand why you feel them.</p>
+                
+                <h4>The Fun Part</h4>
+                <p>Build your own chatbot that can guess emotions from text! Just copy-paste some code, type in messages, and watch the AI figure out if you're happy or upset.</p>
+                
+                <h4>What You'll Learn</h4>
                 <ul>
-                    <li>Faces: micro‑expressions, gaze and muscle movement</li>
-                    <li>Voice: tone, pitch and pace reveal arousal or stress</li>
-                    <li>Text: sentiment and intent via language patterns</li>
-                    <li>Limits: context, culture and authenticity are hard; privacy risks</li>
+                    <li>Recognize your own emotions better</li>
+                    <li>Understand what triggers different feelings</li>
+                    <li>See how AI tries to understand human emotions</li>
+                    <li>Learn when AI gets it right and when it doesn't</li>
                 </ul>
-                <p><strong>Workshop:</strong> Try quick demos, then discuss where machines misread you.</p>
+                <p><strong>Why It Matters:</strong> You'll get better at understanding yourself AND learn how technology reads emotions.</p>
             `
         },
         empathy: {
-            title: "AI vs Human Empathy",
+            title: "Behind the Mask meets AI Empathy",
             content: `
-                <p>AI can simulate care, not feel it.</p>
+                <h4>Psychology Module: Behind the Mask</h4>
+                <p>Defense mechanisms — how the mind unconsciously protects itself through projection, denial, displacement, rationalization.</p>
+                
+                <h4>Tech Module: AI Empathy Limits</h4>
+                <p>Explore what AI can simulate (pattern recognition, consistent responses) vs what it cannot feel (genuine understanding, warmth, moral judgment).</p>
+                
+                <h4>The Integration</h4>
                 <ul>
-                    <li>AI does: recognize patterns, offer 24/7 prompts, track mood</li>
-                    <li>AI can’t: feel, hold deep context, replace trusted relationships</li>
+                    <li>Identify personal defense mechanisms students use online vs offline</li>
+                    <li>Test AI chatbot responses to emotional scenarios</li>
+                    <li>Recognize when AI gives surface-level "empathy" vs when humans provide depth</li>
+                    <li>Understand why we might hide behind digital masks with both humans and AI</li>
                 </ul>
-                <p><strong>Workshop:</strong> Map when a bot helps vs when a human matters.</p>
+                <p><strong>Outcome:</strong> Students distinguish authentic connection from algorithmic responses and understand their own emotional defenses.</p>
             `
         },
         attention: {
-            title: "How Algorithms Influence Attention",
+            title: "The Bias Code meets Algorithmic Attention",
             content: `
-                <p>Platforms compete for your attention.</p>
+                <h4>Psychology Module: The Bias Code</h4>
+                <p>Cognitive biases — how we perceive the world inaccurately through confirmation bias, attention bias, social media influence.</p>
+                
+                <h4>Tech Module: Algorithmic Attention Manipulation</h4>
+                <p>How platforms use variable rewards, infinite scroll, personalization, and FOMO to capture attention.</p>
+                
+                <h4>The Integration</h4>
                 <ul>
-                    <li>Levers: variable rewards, social proof, infinite scroll, personalization</li>
-                    <li>Effects: shorter focus, sleep disruption, mood swings</li>
-                    <li>Regain control: set timers, batch notifications, intentional breaks</li>
+                    <li>Map personal cognitive biases: What content do you seek out?</li>
+                    <li>Analyze how algorithms reinforce those biases (filter bubbles)</li>
+                    <li>Understand why you can't stop scrolling (psychological triggers × algorithmic design)</li>
+                    <li>Design counter-strategies: timers, intentional feed curation, bias awareness</li>
                 </ul>
-                <p><strong>Workshop:</strong> Audit your feed and redesign it for focus.</p>
+                <p><strong>Outcome:</strong> Recognize the double impact of internal biases + external algorithmic manipulation on attention.</p>
             `
         },
         dopamine: {
-            title: "Digital Dependency & Dopamine",
+            title: "Break Phone Addiction",
             content: `
+                <h4>What You'll Do</h4>
+                <p>Discover why you can't stop checking your phone. Learn about the reward system in your brain that makes social media so addictive.</p>
+                
+                <h4>The Fun Part</h4>
+                <p>Use AI to analyze your own stress! Write about your day, feed it to the AI, and it will show you stress patterns you didn't even notice.</p>
+                
+                <h4>What You'll Learn</h4>
                 <ul>
-                    <li>Loop: cue → check → reward → repeat</li>
-                    <li>Signs: compulsive checking, anxiety without phone, late‑night scrolling</li>
-                    <li>Break it: remove cues, delay checks, add healthy rewards</li>
+                    <li>Why your brain loves notifications and likes</li>
+                    <li>How apps are designed to keep you hooked</li>
+                    <li>Track your own stress levels using AI</li>
+                    <li>Simple tricks to break the phone-checking habit</li>
                 </ul>
-                <p><strong>Workshop:</strong> Build a 7‑day dopamine reset plan.</p>
+                <p><strong>Why It Matters:</strong> Take control of your phone time instead of letting it control you.</p>
             `
         },
         strain: {
-            title: "Early Signs of Psychological Strain",
+            title: "In My Head meets Psychological Strain",
             content: `
+                <h4>Psychology Module: In My Head</h4>
+                <p>Social psychology — peer pressure, conformity, group behavior, social comparison, digital identity, and belonging.</p>
+                
+                <h4>Tech Module: Early Warning Signs</h4>
+                <p>Recognize digital-era stressors: comparison anxiety, cyberbullying, information overload, blurred identity boundaries.</p>
+                
+                <h4>The Integration</h4>
                 <ul>
-                    <li>Stressors: comparison, cyberbullying, overload, blurred identity</li>
-                    <li>Early signs: irritability, withdrawal, poor sleep, foggy focus</li>
-                    <li>Do: talk to someone, lighten inputs, small routines, seek help early</li>
+                    <li>Explore social comparison on social media vs real-world peer dynamics</li>
+                    <li>Identify early signs: irritability, withdrawal, sleep issues, foggy focus</li>
+                    <li>Connect psychological theory (social identity) to digital behavior (online personas)</li>
+                    <li>Practice peer support scripts for digital wellness conversations</li>
                 </ul>
-                <p><strong>Workshop:</strong> Spot‑the‑signs exercises and peer‑support scripts.</p>
+                <p><strong>Outcome:</strong> Students recognize strain in themselves and friends, bridging psychology concepts with digital realities.</p>
             `
         },
         wellness: {
-            title: "AI as a Mental Wellness Assistant",
+            title: "Talk Therapy meets AI Wellness",
             content: `
+                <h4>Psychology Module: Talk Therapy</h4>
+                <p>Communication & emotional intelligence — active listening, empathy, boundary-setting, interpersonal skills, expressing emotions safely.</p>
+                
+                <h4>Tech Module: AI as Mental Wellness Assistant</h4>
+                <p>AI strengths (on-demand prompts, tracking, structured tools) vs limits (no real empathy, misses nuance, not for crises).</p>
+                
+                <h4>The Integration</h4>
                 <ul>
-                    <li>AI strengths: on‑demand prompts, tracking, structured tools</li>
-                    <li>Limits: no real empathy, misses nuance, not for crises</li>
-                    <li>Use well: journaling, CBT micro‑tasks, breathing & sleep routines</li>
+                    <li>Practice human-to-human communication skills first</li>
+                    <li>Then explore AI wellness tools: journaling apps, CBT exercises, mindfulness guides</li>
+                    <li>Create a decision tree: When to talk to a friend, when to use AI, when to seek professional help</li>
+                    <li>Understand AI as supplement, not replacement, for human connection</li>
                 </ul>
-                <p><strong>Workshop:</strong> Choose safe tools and a “when to escalate” checklist.</p>
+                <p><strong>Outcome:</strong> Balanced perspective on using AI for wellness while prioritizing authentic human support when needed.</p>
             `
         },
-        awareness: {
-            title: "Building Awareness Around Daily Digital Usage",
+        learning: {
+            title: "Use AI Smartly",
             content: `
+                <h4>What You'll Do</h4>
+                <p>Learn how to ask AI tools like ChatGPT better questions so you get actually helpful answers instead of confusing ones.</p>
+                
+                <h4>The Fun Part</h4>
+                <p>Practice writing prompts and see the difference between "bad" questions and "good" questions. Watch how changing a few words completely changes what AI gives you!</p>
+                
+                <h4>What You'll Learn</h4>
                 <ul>
-                    <li>Track: screen time, triggers, energy</li>
-                    <li>Understand: when/why you reach for it</li>
-                    <li>Boundaries: device‑free zones, morning/evening rules, notification audit</li>
-                    <li>Alternatives: movement, people, creativity, mindfulness</li>
+                    <li>How to ask clear questions to get better answers</li>
+                    <li>Use ChatGPT for homework and learning (not just copying!)</li>
+                    <li>Understand how habits work in your brain</li>
+                    <li>Turn AI into a study buddy instead of a distraction</li>
                 </ul>
-                <p><strong>Practice:</strong> Digital sunset, mindful morning, weekly mini‑detox.</p>
+                <p><strong>Why It Matters:</strong> AI can help you learn faster if you know how to use it right.</p>
             `
         }
     };
 
     // Open integration modal when Learn More is clicked
     learnMoreBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             const topicId = this.getAttribute('data-integration');
             const topic = integrationData[topicId];
-            
+
             if (topic) {
                 document.getElementById('modalIntegrationTitle').textContent = topic.title;
                 document.getElementById('modalIntegrationContent').innerHTML = topic.content;
-                
+
                 integrationModal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -577,14 +629,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close integration modal when X is clicked
     if (integrationClose) {
-        integrationClose.addEventListener('click', function() {
+        integrationClose.addEventListener('click', function () {
             integrationModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         });
     }
 
     // Close integration modal when clicking outside
-    window.addEventListener('click', function(e) {
+    window.addEventListener('click', function (e) {
         if (e.target === integrationModal) {
             integrationModal.style.display = 'none';
             document.body.style.overflow = 'auto';
@@ -592,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close integration modal with Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && integrationModal.style.display === 'block') {
             integrationModal.style.display = 'none';
             document.body.style.overflow = 'auto';
