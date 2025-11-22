@@ -166,6 +166,36 @@ html {
     z-index: 1;
 }
 
+/* Hero logo (top-left) */
+.hero-logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+}
+.hero-logo img {
+    height: 56px;
+    width: auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+}
+.hero-logo .hero-brand {
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 600px) {
+    .hero-logo img { height: 44px; }
+    .hero-logo .hero-brand { font-size: 1.05rem; }
+}
+
 section {
     scroll-margin-top: 80px;
     position: relative;
