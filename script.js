@@ -352,16 +352,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Function to move pill to target link
         function movePill(link) {
-            const linkRect = link.getBoundingClientRect();
-            const navRect = navLinks.getBoundingClientRect();
+            if (!link || !link.getBoundingClientRect) return; // safety check
             
-            const left = linkRect.left - navRect.left;
-            const width = linkRect.width;
-            const height = linkRect.height;
+            // Use requestAnimationFrame to ensure DOM is settled
+            requestAnimationFrame(() => {
+                const linkRect = link.getBoundingClientRect();
+                const navRect = navLinks.getBoundingClientRect();
+                
+                const left = linkRect.left - navRect.left;
+                const width = linkRect.width;
+                const height = linkRect.height;
 
-            pill.style.left = left + 'px';
-            pill.style.width = width + 'px';
-            pill.style.height = height + 'px';
+                pill.style.left = left + 'px';
+                pill.style.width = width + 'px';
+                pill.style.height = height + 'px';
+            });
         }
 
         // Initialize pill position
@@ -390,37 +395,45 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Update active state based on scroll position
+        let scrollTimeout;
         function updateActiveOnScroll() {
-            const sections = document.querySelectorAll('section[id]');
-            const scrollY = window.pageYOffset;
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const sections = document.querySelectorAll('section[id]');
+                const scrollY = window.pageYOffset;
 
-            // If at the very top, activate home
-            if (scrollY < 100) {
-                links.forEach(l => l.classList.remove('active'));
-                links[0].classList.add('active');
-                movePill(links[0]);
-                return;
-            }
-
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 150;
-                const sectionBottom = sectionTop + section.offsetHeight;
-                const sectionId = section.getAttribute('id');
-
-                if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                    links.forEach(l => {
-                        l.classList.remove('active');
-                        if (l.getAttribute('href') === `#${sectionId}`) {
-                            l.classList.add('active');
-                            movePill(l);
-                        }
-                    });
+                // If at the very top, activate home
+                if (scrollY < 100) {
+                    const homeLink = links[0];
+                    if (!homeLink.classList.contains('active')) {
+                        links.forEach(l => l.classList.remove('active'));
+                        homeLink.classList.add('active');
+                        movePill(homeLink);
+                    }
+                    return;
                 }
-            });
+
+                let activeFound = false;
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 200;
+                    const sectionBottom = sectionTop + section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollY >= sectionTop && scrollY < sectionBottom && !activeFound) {
+                        activeFound = true;
+                        const targetLink = Array.from(links).find(l => l.getAttribute('href') === `#${sectionId}`);
+                        if (targetLink && !targetLink.classList.contains('active')) {
+                            links.forEach(l => l.classList.remove('active'));
+                            targetLink.classList.add('active');
+                            movePill(targetLink);
+                        }
+                    }
+                });
+            }, 50); // debounce scroll events
         }
 
         // Add scroll listener for active state
-        window.addEventListener('scroll', updateActiveOnScroll);
+        window.addEventListener('scroll', updateActiveOnScroll, { passive: true });
     }
 
     // Initialize pill highlight after a short delay to ensure layout is ready
