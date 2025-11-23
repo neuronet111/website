@@ -787,7 +787,7 @@ document.addEventListener('DOMContentLoaded', function () {
         mufaiz: {
             name: "Mufaiz Athar",
             role: "Video Editor",
-            image: "Photos/MUFAIZ.jpeg",
+            image: "Photos/MUFAIZ.webp",
             bio: `
                 <p>Mufaiz Athar transforms raw footage into compelling narratives that showcase the impact of Neuro.net's workshops on students and communities.</p>
                 <p>His video editing skills help communicate complex concepts and emotional journeys in an accessible and engaging format.</p>
@@ -1072,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let currentIndex = startIndex;
 
         function applyPositions() {
-            const slideW = allSlides[0] ? allSlides[0].offsetWidth : 408;
+            const slideW = 380; // Use actual slide width
             const isMobile = window.innerWidth < 640;
             // tighter offsets on mobile, slightly expanded desktop for improved layering
             const nearOffset = isMobile ? slideW * 0.38 : slideW * 0.58;
