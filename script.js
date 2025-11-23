@@ -359,13 +359,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const linkRect = link.getBoundingClientRect();
                 const navRect = navLinks.getBoundingClientRect();
                 
-                const left = linkRect.left - navRect.left;
-                const width = linkRect.width;
-                const height = linkRect.height;
-
-                pill.style.left = left + 'px';
-                pill.style.width = width + 'px';
-                pill.style.height = height + 'px';
+                // Fix: Use offset properties relative to the parent container
+                // This handles mobile scrolling and resizing automatically
+                pill.style.left = link.offsetLeft + 'px';
+                pill.style.width = link.offsetWidth + 'px';
+                pill.style.height = link.offsetHeight + 'px';
             });
         }
 
@@ -436,8 +434,12 @@ document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('scroll', updateActiveOnScroll, { passive: true });
     }
 
-    // Initialize pill highlight after a short delay to ensure layout is ready
-    setTimeout(initNavPillHighlight, 100);
+    // Fix: Wait for fonts to load so pill width is accurate
+    document.fonts.ready.then(() => {
+        initNavPillHighlight();
+        // Double check after a small delay for any layout shifts
+        setTimeout(initNavPillHighlight, 200);
+    });
 
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
