@@ -1059,8 +1059,9 @@ document.addEventListener('DOMContentLoaded', function () {
         function applyPositions() {
             const slideW = allSlides[0] ? allSlides[0].offsetWidth : 408;
             const isMobile = window.innerWidth < 640;
-            const nearOffset = isMobile ? slideW * 0.45 : slideW * 0.55; // first ring spacing
-            const farOffset = isMobile ? slideW * 0.75 : slideW * 0.9;   // second ring spacing
+            // tighter offsets on mobile, slightly expanded desktop for improved layering
+            const nearOffset = isMobile ? slideW * 0.38 : slideW * 0.58;
+            const farOffset = isMobile ? slideW * 0.62 : slideW * 0.95;
             allSlides.forEach(slide => {
                 slide.classList.remove('center');
                 slide.style.visibility = 'hidden';
