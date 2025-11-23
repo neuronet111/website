@@ -399,6 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
             scrollTimeout = setTimeout(() => {
                 const sections = document.querySelectorAll('section[id]');
                 const scrollY = window.pageYOffset;
+                const viewportCenter = scrollY + window.innerHeight / 2;
 
                 // If at the very top, activate home
                 if (scrollY < 100) {
@@ -411,22 +412,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                let activeFound = false;
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop - 200;
-                    const sectionBottom = sectionTop + section.offsetHeight;
-                    const sectionId = section.getAttribute('id');
+                // Find which section's center is closest to viewport center
+                let closestSection = null;
+                let closestDistance = Infinity;
 
-                    if (scrollY >= sectionTop && scrollY < sectionBottom && !activeFound) {
-                        activeFound = true;
-                        const targetLink = Array.from(links).find(l => l.getAttribute('href') === `#${sectionId}`);
-                        if (targetLink && !targetLink.classList.contains('active')) {
-                            links.forEach(l => l.classList.remove('active'));
-                            targetLink.classList.add('active');
-                            movePill(targetLink);
-                        }
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionCenter = sectionTop + section.offsetHeight / 2;
+                    const distance = Math.abs(viewportCenter - sectionCenter);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestSection = section;
                     }
                 });
+
+                if (closestSection) {
+                    const sectionId = closestSection.getAttribute('id');
+                    const targetLink = Array.from(links).find(l => l.getAttribute('href') === `#${sectionId}`);
+                    
+                    if (targetLink && !targetLink.classList.contains('active')) {
+                        links.forEach(l => l.classList.remove('active'));
+                        targetLink.classList.add('active');
+                        movePill(targetLink);
+                    }
+                }
             }, 50); // debounce scroll events
         }
 
@@ -1048,119 +1058,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         videoObserver.observe(workVideo);
-    }
-
-    // Gallery Carousel - Overlapping Center Stack (manual)
-    const carouselTrack = document.querySelector('.carousel-track');
-    if (carouselTrack) {
-        const prevBtn = document.querySelector('.carousel-btn.prev');
-        const nextBtn = document.querySelector('.carousel-btn.next');
-
-        // Remove old clones
-        carouselTrack.querySelectorAll('.carousel-slide.clone').forEach(c => c.remove());
-        const originals = Array.from(carouselTrack.querySelectorAll('.carousel-slide'));
-        const originalLength = originals.length;
-
-        // Create clones for infinite feel (strip videos)
-        originals.forEach(slide => {
-            const after = slide.cloneNode(true); after.classList.add('clone'); const va = after.querySelector('video'); if (va) va.remove(); carouselTrack.appendChild(after);
-            const before = slide.cloneNode(true); before.classList.add('clone'); const vb = before.querySelector('video'); if (vb) vb.remove(); carouselTrack.insertBefore(before, carouselTrack.firstChild);
-        });
-
-        const allSlides = Array.from(carouselTrack.querySelectorAll('.carousel-slide'));
-        const startIndex = originalLength; // index of first original (center start)
-        let currentIndex = startIndex;
-
-        function applyPositions() {
-            const slideW = 380; // Use actual slide width
-            const isMobile = window.innerWidth < 640;
-            // tighter offsets on mobile, slightly expanded desktop for improved layering
-            const nearOffset = isMobile ? slideW * 0.38 : slideW * 0.58;
-            const farOffset = isMobile ? slideW * 0.62 : slideW * 0.95;
-            allSlides.forEach(slide => {
-                slide.classList.remove('center');
-                slide.style.visibility = 'hidden';
-                slide.style.pointerEvents = 'none';
-            });
-            for (let i = 0; i < allSlides.length; i++) {
-                const dist = i - currentIndex;
-                const s = allSlides[i];
-                if (dist === 0) {
-                    s.classList.add('center');
-                    s.style.transform = 'translate(-50%, -50%) scale(1)';
-                    s.style.opacity = '1';
-                    s.style.filter = 'brightness(1)';
-                    s.style.zIndex = '50';
-                    s.style.visibility = 'visible';
-                    s.style.pointerEvents = 'auto';
-                    continue;
-                }
-                if (Math.abs(dist) === 1) {
-                    const x = dist * nearOffset;
-                    s.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(0.78)`;
-                    s.style.opacity = '0.9';
-                    s.style.filter = 'brightness(0.75)';
-                    s.style.zIndex = (40 - Math.abs(dist)).toString();
-                    s.style.visibility = 'visible';
-                    continue;
-                }
-                if (Math.abs(dist) === 2) {
-                    const x = dist * farOffset;
-                    s.style.transform = `translate(calc(-50% + ${x}px), -50%) scale(0.6)`;
-                    s.style.opacity = '0.5';
-                    s.style.filter = 'brightness(0.55)';
-                    s.style.zIndex = (30 - Math.abs(dist)).toString();
-                    s.style.visibility = 'visible';
-                    continue;
-                }
-                // deeper slides stay hidden
-            }
-            updateVideoPlayback();
-        }
-
-        function updateVideoPlayback() {
-            const center = carouselTrack.querySelector('.carousel-slide.center');
-            allSlides.forEach(slide => {
-                const video = slide.querySelector('.carousel-video');
-                if (!video) return;
-                if (slide === center) {
-                    video.muted = false; const p = video.play(); if (p) p.catch(()=> setTimeout(()=> video.play().catch(()=>{}), 200));
-                } else { video.pause(); }
-            });
-        }
-
-        function nextSlide() {
-            currentIndex++;
-            if (currentIndex >= startIndex + originalLength) currentIndex -= originalLength; // wrap
-            applyPositions();
-        }
-        function prevSlide() {
-            currentIndex--;
-            if (currentIndex < startIndex) currentIndex += originalLength;
-            applyPositions();
-        }
-
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-
-        let touchStartX = 0;
-        carouselTrack.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
-        carouselTrack.addEventListener('touchend', e => {
-            const endX = e.changedTouches[0].screenX;
-            if (endX < touchStartX - 50) nextSlide();
-            if (endX > touchStartX + 50) prevSlide();
-        });
-
-        window.addEventListener('resize', applyPositions);
-        applyPositions();
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) {
-                    allSlides.forEach(slide => { const v = slide.querySelector('.carousel-video'); if (v) v.pause(); });
-                } else { updateVideoPlayback(); }
-            });
-        }, { threshold: 0.3 });
-        observer.observe(carouselTrack);
     }
 });
