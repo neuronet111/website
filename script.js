@@ -751,15 +751,23 @@ document.addEventListener('DOMContentLoaded', function () {
             role: "Psychology Workshop Lead",
             image: "Photos/GURLEEN.webp",
             bio: `
-                <p>Gurleenkaur Chhabda leads the psychological wellness component of Neuro.net's workshops, bringing deep understanding of emotional intelligence and mental health.</p>
-                <p>She specializes in psychoanalytic approaches and helps students develop self-awareness and emotional resilience in the digital age.</p>
-                <p><strong>Key Contributions:</strong></p>
+                <p>Gurleenkaur Chhabda leads the psychological wellness component of Neuro.net's workshops, bringing thoughtful insight into emotional intelligence, behavior patterns, and youth mental well-being.</p>
+                <p>She focuses on making psychology student-friendly by simplifying complex ideas into practical tools that young people can actually use. Her approach integrates psychoanalytic understanding, emotional literacy, and real-life experiences from the digital world to help students build awareness and resilience.</p>
+                <p><strong>Key Contributions</strong></p>
                 <ul>
-                    <li>Wheel of Emotions workshop facilitation</li>
-                    <li>Mental health awareness programs</li>
-                    <li>Emotional intelligence training</li>
+                    <li>Designing & leading workshop structure and activities</li>
+                    <li>Creating youth-focused mental health awareness modules</li>
+                    <li>Developing student-friendly emotional literacy tools</li>
+                    <li>Facilitating communication & emotional intelligence practices</li>
                 </ul>
-                <p><strong>Expertise:</strong> Psychoanalysis, Emotional Intelligence, Youth Psychology</p>
+                <p><strong>Expertise</strong></p>
+                <ul>
+                    <li>Emotional Intelligence</li>
+                    <li>Youth Psychology Understanding</li>
+                    <li>Psychoanalytic Concepts & Behavior Interpretation</li>
+                    <li>Workshop Design + Educational Content Writing</li>
+                    <li>Public Speaking & Student Engagement</li>
+                </ul>
             `
         },
         zain: {
