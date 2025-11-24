@@ -164,7 +164,7 @@ html {
     justify-content: center;
     background: transparent;
     color: white;
-    padding: 80px 20px 140px;
+    padding: 80px 20px 20px;
     position: relative;
     overflow: hidden;
     scroll-margin-top: 0;
@@ -179,14 +179,14 @@ html {
     z-index: 3;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0px;
     pointer-events: auto;
 }
 .hero-logo img {
-    height: 56px;
+    height: 100px;
     width: auto;
-    border-radius: 12px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    border-radius: 0px;
+    box-shadow: none;
 }
 .hero-logo .hero-brand {
     font-weight: 800;
@@ -309,8 +309,8 @@ section {
 /* Banner Section */
 
 .banner-container {
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 300px;
+    margin: 3rem auto 0;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -359,7 +359,7 @@ section {
 
 /* Glassmorphism Cards */
 .problem-solution {
-    padding: 100px 20px;
+    padding: 300px 20px 100px 20px;
     background: transparent;
     scroll-margin-top: 80px;
     position: relative;
@@ -954,6 +954,7 @@ section {
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
+    margin-top: 2rem;
 }
 
 .value-comparison h4 {
@@ -1125,7 +1126,7 @@ section {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 0 auto 5rem auto;
 }
 
 .eligibility-card {
