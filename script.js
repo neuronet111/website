@@ -52,13 +52,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add intro active class
     document.body.classList.add('intro-active');
     
-    // After 4.5 seconds, complete intro
+    // After 4.5 seconds, complete intro and start typewriter
     setTimeout(() => {
         document.body.classList.remove('intro-active');
         document.body.classList.add('intro-complete');
+        initTypewriter();
     }, 4500);
-    
-    initTypewriter();
     
     // --- Configuration ---
     const EMAILJS_SERVICE_ID = "service_kir0ule";
