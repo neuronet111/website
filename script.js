@@ -1,5 +1,65 @@
 // script.js
+
+// Intro Animation State
+let isIntroComplete = false;
+let introStartTime = null;
+
+// Typewriter Effect
+function initTypewriter() {
+    const phrases = [
+        "Artificial Intelligence?",
+        "Psychology?",
+        "Why not both?",
+        "Neuro.Net"
+    ];
+    
+    let currentPhrase = 0;
+    let currentChar = 0;
+    let isDeleting = false;
+    const typewriterElement = document.querySelector('.typewriter');
+    
+    function type() {
+        const phrase = phrases[currentPhrase];
+        
+        if (isDeleting) {
+            currentChar--;
+        } else {
+            currentChar++;
+        }
+        
+        typewriterElement.textContent = phrase.substring(0, currentChar);
+        
+        let speed = isDeleting ? 50 : 100;
+        
+        if (!isDeleting && currentChar === phrase.length) {
+            // Pause before backspacing
+            speed = 1500;
+            isDeleting = true;
+        } else if (isDeleting && currentChar === 0) {
+            // Move to next phrase
+            isDeleting = false;
+            currentPhrase = (currentPhrase + 1) % phrases.length;
+            speed = 500;
+        }
+        
+        setTimeout(type, speed);
+    }
+    
+    type();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    // Add intro active class
+    document.body.classList.add('intro-active');
+    
+    // After 4.5 seconds, complete intro
+    setTimeout(() => {
+        document.body.classList.remove('intro-active');
+        document.body.classList.add('intro-complete');
+    }, 4500);
+    
+    initTypewriter();
+    
     // --- Configuration ---
     const EMAILJS_SERVICE_ID = "service_kir0ule";
     const EMAILJS_TEMPLATE_ID = "template_t3o2or4";
@@ -148,8 +208,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Initialize particles - reduced count
         function initParticles() {
             particles = [];
-            const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 20000), 60);
-            for (let i = 0; i < particleCount; i++) {
+            // Increase particle count: 100 on desktop, 80 on tablet, 60+ on mobile
+            const baseCount = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 100);
+            for (let i = 0; i < baseCount; i++) {
                 particles.push(new Particle());
             }
         }
@@ -301,6 +362,11 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Main animation loop with ripples integrated
         function animate(currentTime) {
+            // Initialize intro timing
+            if (introStartTime === null) {
+                introStartTime = currentTime;
+            }
+
             const deltaTime = currentTime - lastFrameTime;
             
             if (deltaTime >= frameInterval) {
@@ -308,21 +374,130 @@ document.addEventListener('DOMContentLoaded', function () {
                 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                drawMouseEffect();
+                // Intro animation logic
+                const elapsedTime = currentTime - introStartTime;
+                const introDuration = 4000; // 4 seconds for intro
+                const formationDuration = 2800; // Time for neurons to form
+                const blastDuration = 400; // Time for blast off
                 
-                particles.forEach(particle => {
-                    particle.update();
-                    particle.draw();
-                });
-                
-                drawConnections();
-                
-                // Update and draw ripples
-                ripples = ripples.filter(ripple => {
-                    ripple.update();
-                    ripple.draw();
-                    return ripple.life > 0;
-                });
+                if (!isIntroComplete && elapsedTime < introDuration) {
+                    // During intro: guide particles to form hero content pattern
+                    const formationProgress = Math.min(elapsedTime / formationDuration, 1);
+                    const blastProgress = Math.max((elapsedTime - formationDuration) / blastDuration, 0);
+                    
+                    particles.forEach((particle, index) => {
+                        // Create multiple formation zones (logo, text, buttons areas)
+                        const heroX = canvas.width / 2;
+                        const heroY = canvas.height / 2;
+                        
+                        // Distribute particles across multiple formations
+                        const zone = Math.floor((index / particles.length) * 4);
+                        let targetX, targetY;
+                        
+                        if (zone === 0) {
+                            // Logo area - left side
+                            const angle = (index / (particles.length * 0.25)) * Math.PI * 2;
+                            const radius = 80;
+                            targetX = heroX - 250 + Math.cos(angle) * radius;
+                            targetY = heroY - 100 + Math.sin(angle) * radius;
+                        } else if (zone === 1) {
+                            // Main text area - center
+                            const angle = ((index - particles.length * 0.25) / (particles.length * 0.25)) * Math.PI * 2;
+                            const radius = 150;
+                            targetX = heroX + 50 + Math.cos(angle) * radius;
+                            targetY = heroY + Math.sin(angle) * radius;
+                        } else if (zone === 2) {
+                            // Subtitle area - lower
+                            const angle = ((index - particles.length * 0.5) / (particles.length * 0.25)) * Math.PI * 1.5;
+                            const radius = 120;
+                            targetX = heroX + 100 + Math.cos(angle) * radius;
+                            targetY = heroY + 150 + Math.sin(angle) * radius;
+                        } else {
+                            // Buttons area - bottom
+                            const angle = ((index - particles.length * 0.75) / (particles.length * 0.25)) * Math.PI * 1.2;
+                            const radius = 100;
+                            targetX = heroX + Math.cos(angle) * radius;
+                            targetY = heroY + 250 + Math.sin(angle) * radius;
+                        }
+                        
+                        // Interpolate to formation
+                        const easeProgress = formationProgress < 1 ? 
+                            Math.pow(formationProgress, 0.5) : // Ease in
+                            1;
+                            
+                        particle.x = particle.baseX + (targetX - particle.baseX) * easeProgress;
+                        particle.y = particle.baseY + (targetY - particle.baseY) * easeProgress;
+                        
+                        // After formation, blast off with acceleration
+                        if (blastProgress > 0) {
+                            const blastVX = (Math.random() - 0.5) * 15 * blastProgress;
+                            const blastVY = (Math.random() - 0.5) * 15 * blastProgress;
+                            particle.x += blastVX;
+                            particle.y += blastVY;
+                            // Fade out during blast
+                            particle.opacity = particle.baseOpacity * (1 - blastProgress * 0.8);
+                        } else {
+                            // Fade in particles during formation
+                            particle.opacity = particle.baseOpacity * easeProgress;
+                        }
+                    });
+                    
+                    // Draw bright connections during intro formation
+                    const maxDistance = 160;
+                    const maxDistanceSq = maxDistance * maxDistance;
+                    
+                    for (let i = 0; i < particles.length; i++) {
+                        let connectionsDrawn = 0;
+                        const maxConnections = 5;
+                        
+                        for (let j = i + 1; j < particles.length && connectionsDrawn < maxConnections; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const distanceSq = dx * dx + dy * dy;
+                            
+                            if (distanceSq < maxDistanceSq) {
+                                const distance = Math.sqrt(distanceSq);
+                                let opacity = (1 - distance / maxDistance) * 0.8 * (1 - blastProgress * 0.9);
+                                ctx.strokeStyle = `rgba(100, 200, 255, ${opacity})`;
+                                ctx.lineWidth = 2 + blastProgress * 2;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.stroke();
+                                connectionsDrawn++;
+                            }
+                        }
+                    }
+                    
+                    particles.forEach(particle => particle.draw());
+                } else {
+                    // Intro complete - switch to normal flow
+                    if (!isIntroComplete) {
+                        isIntroComplete = true;
+                        // Reset particles for normal random movement
+                        particles.forEach(particle => {
+                            particle.vx = (Math.random() - 0.5) * 1;
+                            particle.vy = (Math.random() - 0.5) * 1;
+                        });
+                    }
+                    
+                    // Normal animation flow
+                    drawMouseEffect();
+                    
+                    particles.forEach(particle => {
+                        particle.update();
+                        particle.draw();
+                    });
+                    
+                    drawConnections();
+                    
+                    // Update and draw ripples
+                    ripples = ripples.filter(ripple => {
+                        ripple.update();
+                        ripple.draw();
+                        return ripple.life > 0;
+                    });
+                }
             }
             
             animationId = requestAnimationFrame(animate);
@@ -333,147 +508,128 @@ document.addEventListener('DOMContentLoaded', function () {
     
     initNeuralNetwork();
 
-    // iOS-style pill highlight for navigation
+    // iOS-style pill highlight for navigation - Complete rewrite
     function initNavPillHighlight() {
-        const navLinks = document.querySelector('.nav-links');
-        if (!navLinks || navLinks.classList.contains('active')) return;
+        const navLinksContainer = document.querySelector('.nav-links');
+        const navLinks = navLinksContainer.querySelectorAll('a');
+        
+        if (!navLinksContainer || navLinks.length === 0) return;
 
-        // Create pill highlight element
+        // Create and append pill element
         const pill = document.createElement('div');
         pill.className = 'nav-pill-highlight';
-        navLinks.appendChild(pill);
+        navLinksContainer.appendChild(pill);
 
-        const links = navLinks.querySelectorAll('a');
-        if (links.length === 0) return;
-
-        // Set initial active link (home)
-        const activeLink = links[0];
-        activeLink.classList.add('active');
-
-        // Function to move pill to target link
-        function movePill(link) {
-            if (!link || !link.getBoundingClientRect) return; // safety check
-            
-            // Use requestAnimationFrame to ensure DOM is settled
+        // Helper function to update pill position
+        function updatePillPosition(link) {
+            if (!link) return;
             requestAnimationFrame(() => {
-                const linkRect = link.getBoundingClientRect();
-                const navRect = navLinks.getBoundingClientRect();
-                
-                // Fix: Use offset properties relative to the parent container
-                // This handles mobile scrolling and resizing automatically
                 pill.style.left = link.offsetLeft + 'px';
                 pill.style.width = link.offsetWidth + 'px';
                 pill.style.height = link.offsetHeight + 'px';
             });
         }
 
-        // Initialize pill position
-        movePill(activeLink);
+        // Helper function to set active link
+        function setActiveLink(link) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            if (link) {
+                link.classList.add('active');
+                updatePillPosition(link);
+            }
+        }
 
-        // Add click handlers to all nav links
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Remove active class from all links
-                links.forEach(l => l.classList.remove('active'));
+        // Initialize with home link
+        setActiveLink(navLinks[0]);
+
+        // Handle nav link clicks
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                setActiveLink(link);
                 
-                // Add active class to clicked link
-                this.classList.add('active');
-                
-                // Move pill to clicked link
-                movePill(this);
+                // Smooth scroll to target
+                const targetId = link.getAttribute('href');
+                if (targetId === '#home') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
             });
         });
 
         // Update pill position on window resize
         window.addEventListener('resize', () => {
-            const currentActive = navLinks.querySelector('a.active');
-            if (currentActive) {
-                movePill(currentActive);
-            }
-        });
+            const activeLink = navLinksContainer.querySelector('a.active');
+            if (activeLink) updatePillPosition(activeLink);
+        }, { passive: true });
 
-        // Update active state based on scroll position
-        let scrollTimeout;
+        // Update active link based on scroll position
         function updateActiveOnScroll() {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                const sections = document.querySelectorAll('section[id]');
-                const scrollY = window.pageYOffset;
-                const viewportCenter = scrollY + window.innerHeight / 2;
+            const scrollY = window.pageYOffset;
 
-                // If at the very top, activate home
-                if (scrollY < 100) {
-                    const homeLink = links[0];
-                    if (!homeLink.classList.contains('active')) {
-                        links.forEach(l => l.classList.remove('active'));
-                        homeLink.classList.add('active');
-                        movePill(homeLink);
+            // If at top, activate home
+            if (scrollY < 300) {
+                setActiveLink(navLinks[0]);
+                return;
+            }
+
+            // Find which section matches current scroll position
+            for (let link of navLinks) {
+                const href = link.getAttribute('href');
+                if (!href || href === '#home') continue;
+
+                const section = document.querySelector(href);
+                if (!section) continue;
+
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const sectionEnd = sectionTop + sectionHeight;
+
+                // Use 200px threshold for better UX
+                if (scrollY >= sectionTop - 200 && scrollY < sectionEnd - 200) {
+                    const currentActive = navLinksContainer.querySelector('a.active');
+                    if (currentActive !== link) {
+                        setActiveLink(link);
                     }
                     return;
                 }
-
-                // Find which section's center is closest to viewport center
-                let closestSection = null;
-                let closestDistance = Infinity;
-
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionCenter = sectionTop + section.offsetHeight / 2;
-                    const distance = Math.abs(viewportCenter - sectionCenter);
-
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestSection = section;
-                    }
-                });
-
-                if (closestSection) {
-                    const sectionId = closestSection.getAttribute('id');
-                    const targetLink = Array.from(links).find(l => l.getAttribute('href') === `#${sectionId}`);
-                    
-                    if (targetLink && !targetLink.classList.contains('active')) {
-                        links.forEach(l => l.classList.remove('active'));
-                        targetLink.classList.add('active');
-                        movePill(targetLink);
-                    }
-                }
-            }, 50); // debounce scroll events
+            }
         }
 
-        // Add scroll listener for active state
-        window.addEventListener('scroll', updateActiveOnScroll, { passive: true });
+        // Add scroll listener with debouncing
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(updateActiveOnScroll, 50);
+        }, { passive: true });
     }
 
-    // Fix: Wait for fonts to load so pill width is accurate
+    // Initialize after fonts load
     document.fonts.ready.then(() => {
         initNavPillHighlight();
-        // Double check after a small delay for any layout shifts
-        setTimeout(initNavPillHighlight, 200);
     });
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
+    // Scroll Progress Bar
+    function initScrollProgressBar() {
+        const progressBar = document.querySelector('.scroll-progress-bar');
+        if (!progressBar) return;
 
-            // Special handling for home section - scroll to top
-            if (targetId === '#home') {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            } else {
-                const target = document.querySelector(targetId);
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        });
-    });
+        function updateProgressBar() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            progressBar.style.width = scrolled + '%';
+        }
+
+        window.addEventListener('scroll', updateProgressBar, { passive: true });
+        updateProgressBar();
+    }
+
+    initScrollProgressBar();
 
     // Navbar scroll effect (minimal - just shadow changes)
     const navbar = document.querySelector('.navbar');
